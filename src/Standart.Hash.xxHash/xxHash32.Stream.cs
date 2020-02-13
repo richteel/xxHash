@@ -1,5 +1,6 @@
 ﻿namespace Standart.Hash.xxHash
 {
+    using System;
     using System.Buffers;
     using System.Diagnostics;
     using System.IO;
@@ -15,9 +16,14 @@
         /// <returns>The hash</returns>
         public static uint ComputeHash(Stream stream, int bufferSize = 4096, uint seed = 0)
         {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
             Debug.Assert(stream != null);
             Debug.Assert(bufferSize > 16);
-            
+
             // Optimizing memory allocation
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize + 16);
 
@@ -36,8 +42,8 @@
                 // Read flow of bytes
                 while ((readBytes = stream.Read(buffer, offset, bufferSize)) > 0)
                 {
-                    length = length + readBytes;
-                    offset = offset + readBytes;
+                    length += readBytes;
+                    offset += readBytes;
 
                     if (offset < 16) continue;
 

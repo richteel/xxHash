@@ -15,14 +15,14 @@
             Debug.Assert(count >= 0);
             Debug.Assert(count + srcOffset <= src.Length);
             Debug.Assert(count + dstOffset <= dst.Length);
-                      
+
             fixed (byte* pSrc = &src[srcOffset])
             fixed (byte* pDst = &dst[dstOffset])
             {
                 byte* ptrSrc = pSrc;
                 byte* ptrDst = pDst;
-                
-                SMALLTABLE:
+
+            SMALLTABLE:
                 switch (count)
                 {
                     case 0:
@@ -114,7 +114,7 @@
                         *(long*)(ptrDst + 8) = *(long*)(ptrSrc + 8);
                         *(int*)(ptrDst + 16) = *(int*)(ptrSrc + 16);
                         return;
-    
+
                     case 21:
                         *(long*)ptrDst = *(long*)ptrSrc;
                         *(long*)(ptrDst + 8) = *(long*)(ptrSrc + 8);
@@ -195,7 +195,7 @@
                     default:
                         break;
                 }
-    
+
                 long* lpSrc = (long*)ptrSrc;
                 long* ldSrc = (long*)ptrDst;
                 while (count >= 64)
@@ -224,12 +224,12 @@
                     lpSrc += 4;
                     ldSrc += 4;
                 }
-                
+
                 ptrSrc = (byte*)lpSrc;
                 ptrDst = (byte*)ldSrc;
                 goto SMALLTABLE;
-                }
+            }
         }
-        
+
     }
 }

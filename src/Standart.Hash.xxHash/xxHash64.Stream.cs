@@ -1,11 +1,12 @@
 ﻿namespace Standart.Hash.xxHash
 {
+    using System;
     using System.Buffers;
     using System.Diagnostics;
     using System.IO;
 
     public static partial class xxHash64
-    {      
+    {
         /// <summary>
         /// Compute xxHash for the stream
         /// </summary>
@@ -15,14 +16,19 @@
         /// <returns>The hash</returns>
         public static ulong ComputeHash(Stream stream, int bufferSize = 8192, ulong seed = 0)
         {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
             Debug.Assert(stream != null);
             Debug.Assert(bufferSize > 32);
-            
+
             // Optimizing memory allocation
             byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize + 32);
 
-            int  readBytes;
-            int  offset = 0;
+            int readBytes;
+            int offset = 0;
             long length = 0;
 
             // Prepare the seed vector
@@ -30,14 +36,14 @@
             ulong v2 = seed + p2;
             ulong v3 = seed + 0;
             ulong v4 = seed - p1;
-            
+
             try
             {
                 // Read flow of bytes
                 while ((readBytes = stream.Read(buffer, offset, bufferSize)) > 0)
                 {
-                    length = length + readBytes;
-                    offset = offset + readBytes;
+                    length += readBytes;
+                    offset += readBytes;
 
                     if (offset < 32) continue;
 
@@ -61,7 +67,7 @@
             {
                 // Free memory
                 ArrayPool<byte>.Shared.Return(buffer);
-            }     
+            }
         }
     }
 }

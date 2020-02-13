@@ -1,5 +1,6 @@
 ﻿namespace Standart.Hash.xxHash
 {
+    using System;
     using System.Diagnostics;
 
     public static partial class xxHash32
@@ -13,10 +14,15 @@
         /// <returns>hash</returns>
         public static unsafe uint ComputeHash(byte[] data, int length, uint seed = 0)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             Debug.Assert(data != null);
             Debug.Assert(length >= 0);
             Debug.Assert(length <= data.Length);
-            
+
             fixed (byte* pData = &data[0])
             {
                 return UnsafeComputeHash(pData, length, seed);
@@ -33,11 +39,16 @@
         /// <returns>hash</returns>
         public static unsafe uint ComputeHash(byte[] data, int offset, int length, uint seed = 0)
         {
+            if (data == null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+
             Debug.Assert(data != null);
             Debug.Assert(length >= 0);
             Debug.Assert(offset < data.Length);
             Debug.Assert(length <= data.Length - offset);
-            
+
             fixed (byte* pData = &data[0 + offset])
             {
                 return UnsafeComputeHash(pData, length, seed);

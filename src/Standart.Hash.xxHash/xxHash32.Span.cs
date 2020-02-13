@@ -25,7 +25,7 @@ namespace Standart.Hash.xxHash
                 return UnsafeComputeHash(pData, length, seed);
             }
         }
-        
+
         /// <summary>
         /// Compute xxHash for the data byte span 
         /// </summary>

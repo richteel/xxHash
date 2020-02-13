@@ -1,5 +1,6 @@
 ﻿namespace Standart.Hash.xxHash
 {
+    using System;
     using System.Buffers;
     using System.Diagnostics;
     using System.IO;
@@ -19,7 +20,7 @@
         {
             return await ComputeHashAsync(stream, bufferSize, seed, CancellationToken.None);
         }
-        
+
         /// <summary>
         /// Compute xxHash for the async stream
         /// </summary>
@@ -30,6 +31,11 @@
         /// <returns>The hash</returns>
         public static async ValueTask<ulong> ComputeHashAsync(Stream stream, int bufferSize, ulong seed, CancellationToken cancellationToken)
         {
+            if (stream == null)
+            {
+                throw new ArgumentNullException(nameof(stream));
+            }
+
             Debug.Assert(stream != null);
             Debug.Assert(bufferSize > 32);
 
@@ -50,15 +56,15 @@
             {
                 // Read flow of bytes
                 while ((readBytes = await stream.ReadAsync(buffer, offset, bufferSize, cancellationToken).ConfigureAwait(false)) > 0)
-                {   
+                {
                     // Exit if the operation is canceled
                     if (cancellationToken.IsCancellationRequested)
                     {
-                        return await Task.FromCanceled<ulong>(cancellationToken);
+                        return await Task.FromCanceled<ulong>(cancellationToken).ConfigureAwait(false);
                     }
-                    
-                    length = length + readBytes;
-                    offset = offset + readBytes;
+
+                    length += readBytes;
+                    offset += readBytes;
 
                     if (offset < 32) continue;
 
